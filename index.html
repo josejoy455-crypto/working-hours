@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14181F">
+<title>Ledger — Salary & Overtime Calculator</title>
+<meta name="description" content="Track your salary, overtime and leave with a clean offline ledger.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23C99A3E%22/><text x=%2250%22 y=%2268%22 font-size=%2258%22 text-anchor=%22middle%22 fill=%22%2314181F%22 font-family=%22monospace%22>₹</text></svg>">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ledger">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23C99A3E%22/><text x=%2250%22 y=%2268%22 font-size=%2258%22 text-anchor=%22middle%22 fill=%22%2314181F%22 font-family=%22monospace%22>₹</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="dark">
+
+<!-- ===== TOP BAR ===== -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-mark">₹</span>
+      <div class="brand-text">
+        <span class="brand-name">LEDGER</span>
+        <span class="brand-sub">salary &amp; overtime</span>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="themeToggle" aria-label="Toggle theme" title="Toggle light/dark">
+        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" style="display:none"><path d="M21 12.5A8.5 8.5 0 1 1 11.5 3 6.8 6.8 0 0 0 21 12.5Z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn" id="settingsToggle" aria-label="Settings" title="Work settings">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M19.4 13a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.9 2.9l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.6V19a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.9-2.9l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.6-1H4a2 2 0 110-4h.1a1.7 1.7 0 001.6-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.9-2.9l.1.1a1.7 1.7 0 001.9.3H10a1.7 1.7 0 001-1.6V4a2 2 0 114 0v.1a1.7 1.7 0 001 1.6 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.9 2.9l-.1.1a1.7 1.7 0 00-.3 1.9V10a1.7 1.7 0 001.6 1H20a2 2 0 110 4h-.1a1.7 1.7 0 00-1.6 1z" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="app">
+
+  <!-- ===== HERO / PUNCH CLOCK ===== -->
+  <section class="hero">
+    <div class="hero-clock">
+      <span class="hero-date" id="heroDate">—</span>
+      <span class="hero-time" id="heroTime">00:00:00</span>
+    </div>
+
+    <div class="ticket" id="ticket">
+      <div class="ticket-row">
+        <div class="ticket-stub">
+          <span class="stub-label">Clock In</span>
+          <span class="stub-value" id="clockInDisplay">— : —</span>
+        </div>
+        <div class="ticket-perf"></div>
+        <div class="ticket-stub">
+          <span class="stub-label">Clock Out</span>
+          <span class="stub-value" id="clockOutDisplay">— : —</span>
+        </div>
+        <div class="ticket-perf"></div>
+        <div class="ticket-stub stub-hours">
+          <span class="stub-label">Hours Today</span>
+          <span class="stub-value" id="hoursTodayDisplay">0h 00m</span>
+        </div>
+      </div>
+      <div class="ticket-actions">
+        <button class="btn btn-primary" id="clockBtn">Clock In</button>
+        <button class="btn btn-ghost" id="editShiftBtn">Edit Manually</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TAB NAV ===== -->
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="dashboard">Dashboard</button>
+    <button class="tab" data-tab="tracker">Tracker</button>
+    <button class="tab" data-tab="calendar">Calendar</button>
+    <button class="tab" data-tab="reports">Reports</button>
+    <button class="tab" data-tab="settings">Settings</button>
+  </nav>
+
+  <!-- ===== DASHBOARD ===== -->
+  <section class="panel active" id="panel-dashboard">
+
+    <div class="track-progress">
+      <div class="track-labels">
+        <span>Workable days completed</span>
+        <span id="progressLabel">0 / 0</span>
+      </div>
+      <div class="track">
+        <div class="track-fill" id="progressFill"></div>
+        <div class="track-marker" id="progressMarker">🚌</div>
+      </div>
+    </div>
+
+    <div class="ledger-grid">
+      <div class="ledger-card highlight">
+        <span class="lc-label">Current Salary Earned</span>
+        <span class="lc-value" id="statCurrentSalary">₹0</span>
+        <span class="lc-foot" id="statCurrentSalaryFoot">as of today</span>
+      </div>
+      <div class="ledger-card">
+        <span class="lc-label">Today's Earnings</span>
+        <span class="lc-value" id="statTodayEarnings">₹0</span>
+      </div>
+      <div class="ledger-card accent-amber">
+        <span class="lc-label">Today's Overtime</span>
+        <span class="lc-value" id="statTodayOT">₹0</span>
+        <span class="lc-foot" id="statTodayOTHours">0h 00m</span>
+      </div>
+      <div class="ledger-card accent-amber">
+        <span class="lc-label">Total Overtime Pay</span>
+        <span class="lc-value" id="statTotalOTPay">₹0</span>
+        <span class="lc-foot" id="statTotalOTHours">0h 00m total</span>
+      </div>
+      <div class="ledger-card accent-red">
+        <span class="lc-label">Unpaid Leave (Not Earned)</span>
+        <span class="lc-value" id="statLeaveDeduction">₹0</span>
+        <span class="lc-foot" id="statLeaveCount">0 unpaid</span>
+      </div>
+      <div class="ledger-card accent-green">
+        <span class="lc-label">Paid Leave Used</span>
+        <span class="lc-value" id="statPaidLeave">0 / 1</span>
+        <span class="lc-foot" id="statPaidLeaveFoot">1 remaining</span>
+      </div>
+      <div class="ledger-card">
+        <span class="lc-label">Remaining to Earn</span>
+        <span class="lc-value" id="statRemaining">₹0</span>
+        <span class="lc-foot">of max possible this month</span>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <h2>Monthly Summary</h2>
+      <span class="section-sub" id="monthLabel">—</span>
+    </div>
+
+    <div class="summary-table" id="summaryTable">
+      <div class="sr"><span>Daily Salary</span><span id="sumDaily">₹0</span></div>
+      <div class="sr"><span>Hourly Salary</span><span id="sumHourly">₹0</span></div>
+      <div class="sr"><span>Normal Salary Earned</span><span id="sumNormal">₹0</span></div>
+      <div class="sr"><span>Overtime Hours</span><span id="sumOTHours">0h</span></div>
+      <div class="sr"><span>Overtime Pay</span><span id="sumOTPay">₹0</span></div>
+      <div class="sr"><span>Paid Leave Salary</span><span id="sumPaidLeave">₹0</span></div>
+      <div class="sr"><span>Unpaid Leave (Not Earned)</span><span id="sumLeaveDeduction">₹0</span></div>
+      <div class="sr strong"><span>Current Salary Earned</span><span id="sumCurrent">₹0</span></div>
+      <div class="sr"><span>Expected Salary (by today, no leave)</span><span id="sumExpected">₹0</span></div>
+      <div class="sr"><span>Maximum Possible Overtime Pay (earned + still achievable)</span><span id="sumMaxOT">₹0</span></div>
+      <div class="sr"><span>Maximum Possible Salary (from today onward)</span><span id="sumMax">₹0</span></div>
+      <div class="sr strong accent-line"><span>Total Monthly Salary (base)</span><span id="sumTotal">₹0</span></div>
+      <div class="sr"><span>Workable Days Completed</span><span id="sumDaysDone">0</span></div>
+      <div class="sr"><span>Workable Days Remaining</span><span id="sumDaysLeft">0</span></div>
+    </div>
+  </section>
+
+  <!-- ===== SHIFT TRACKER ===== -->
+  <section class="panel" id="panel-tracker">
+    <div class="section-title">
+      <h2>Shift Tracker</h2>
+      <span class="section-sub">Recent entries</span>
+    </div>
+    <div class="entry-list" id="entryList"></div>
+    <button class="btn btn-outline full-width" id="addManualEntry">+ Add Manual Entry</button>
+  </section>
+
+  <!-- ===== CALENDAR ===== -->
+  <section class="panel" id="panel-calendar">
+    <div class="cal-header">
+      <button class="icon-btn" id="calPrev">‹</button>
+      <span id="calMonthLabel">—</span>
+      <button class="icon-btn" id="calNext">›</button>
+    </div>
+    <div class="cal-legend">
+      <span><i class="dot dot-work"></i>Worked</span>
+      <span><i class="dot dot-ot"></i>Overtime</span>
+      <span><i class="dot dot-leave"></i>Unpaid Leave</span>
+      <span><i class="dot dot-paid"></i>Paid Leave</span>
+      <span><i class="dot dot-today"></i>Today</span>
+      <span><i class="dot dot-off"></i>Weekly Off</span>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="cal-detail" id="calDetail">Tap a date to see details.</div>
+  </section>
+
+  <!-- ===== REPORTS ===== -->
+  <section class="panel" id="panel-reports">
+    <div class="section-title">
+      <h2>Reports</h2>
+    </div>
+
+    <div class="report-tabs" id="reportTabs">
+      <button class="rtab active" data-r="daily">Daily</button>
+      <button class="rtab" data-r="weekly">Weekly</button>
+      <button class="rtab" data-r="monthly">Monthly</button>
+    </div>
+
+    <div class="search-row">
+      <input type="text" id="monthSearch" placeholder="Search month (e.g. January 2026)" />
+    </div>
+
+    <div class="report-body" id="reportBody"></div>
+
+    <div class="section-title">
+      <h2>History</h2>
+    </div>
+    <div class="history-tabs" id="historyTabs">
+      <button class="rtab active" data-h="salary">Salary History</button>
+      <button class="rtab" data-h="overtime">Overtime History</button>
+    </div>
+    <div class="report-body" id="historyBody"></div>
+
+    <div class="export-row">
+      <button class="btn btn-outline" id="exportPdf">Export PDF</button>
+      <button class="btn btn-outline" id="exportCsv">Export CSV</button>
+      <button class="btn btn-outline" id="printReport">Print</button>
+    </div>
+  </section>
+
+  <!-- ===== SETTINGS ===== -->
+  <section class="panel" id="panel-settings">
+    <div class="section-title"><h2>Work Settings</h2></div>
+
+    <form class="settings-form" id="settingsForm">
+      <label class="field">
+        <span>Monthly Salary (₹)</span>
+        <input type="number" id="cfgMonthlySalary" min="0" step="1" required>
+      </label>
+      <label class="field">
+        <span>Overtime Rate / Hour (₹)</span>
+        <input type="number" id="cfgOTRate" min="0" step="1" required>
+      </label>
+      <p class="field-hint">Unpaid leave simply means that day's daily salary isn't added to what you've earned — there's no extra penalty on top.</p>
+      <label class="field">
+        <span>Paid Leaves / Month</span>
+        <input type="number" id="cfgPaidLeaves" min="0" max="10" step="1" required>
+      </label>
+      <p class="field-hint">Daily salary is always Monthly Salary ÷ 30, a fixed standard — this doesn't change month to month even though calendar months have 28–31 days.</p>
+      <p class="field-hint">Normal hours float with your clock-in: if you clock in late, your shift end time shifts later too — anything beyond your shift length counts as overtime.</p>
+      <div class="field-row">
+        <label class="field">
+          <span>Work Start</span>
+          <input type="time" id="cfgWorkStart" required>
+        </label>
+        <label class="field">
+          <span>Work End</span>
+          <input type="time" id="cfgWorkEnd" required>
+        </label>
+      </div>
+      <label class="field">
+        <span>Max Overtime Hours / Day (used only to estimate your maximum possible monthly salary)</span>
+        <input type="number" id="cfgMaxOTHours" min="0" max="12" step="0.5" required>
+      </label>
+      <div class="field">
+        <span>Weekly Off Days — tap to toggle (worked hours on these days count fully as overtime)</span>
+        <div class="weekday-picker" id="cfgWeeklyOff">
+          <label class="wd-chip"><input type="checkbox" value="0"><span>Sun</span></label>
+          <label class="wd-chip"><input type="checkbox" value="1"><span>Mon</span></label>
+          <label class="wd-chip"><input type="checkbox" value="2"><span>Tue</span></label>
+          <label class="wd-chip"><input type="checkbox" value="3"><span>Wed</span></label>
+          <label class="wd-chip"><input type="checkbox" value="4"><span>Thu</span></label>
+          <label class="wd-chip"><input type="checkbox" value="5"><span>Fri</span></label>
+          <label class="wd-chip"><input type="checkbox" value="6"><span>Sat</span></label>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary full-width">Save Settings</button>
+    </form>
+
+    <div class="section-title"><h2>Data</h2></div>
+    <div class="data-actions">
+      <button class="btn btn-outline" id="backupBtn">Backup (JSON)</button>
+      <label class="btn btn-outline file-btn">
+        Restore (JSON)
+        <input type="file" id="restoreInput" accept="application/json" hidden>
+      </label>
+      <button class="btn btn-danger" id="resetBtn">Reset All Data</button>
+    </div>
+  </section>
+
+</main>
+
+<!-- Manual entry modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalTitle">Edit Entry</h3>
+      <button class="icon-btn" id="modalClose">✕</button>
+    </div>
+    <form class="modal-form" id="entryForm">
+      <label class="field">
+        <span>Date</span>
+        <input type="date" id="entryDate" required>
+      </label>
+      <label class="field">
+        <span>Status</span>
+        <select id="entryStatus">
+          <option value="worked">Worked (normal shift)</option>
+          <option value="ot-only">Overtime Only (e.g. off-day like Sunday)</option>
+          <option value="paid-leave">Paid Leave</option>
+          <option value="leave">Unpaid Leave</option>
+        </select>
+      </label>
+      <div class="field-row" id="entryTimeRow">
+        <label class="field">
+          <span>Clock In</span>
+          <input type="time" id="entryClockIn">
+        </label>
+        <label class="field">
+          <span>Clock Out</span>
+          <input type="time" id="entryClockOut">
+        </label>
+      </div>
+      <label class="field" id="entryOTOnlyRow" style="display:none">
+        <span>Overtime Hours Worked</span>
+        <input type="number" id="entryOTOnlyHours" min="0" max="24" step="0.25" placeholder="e.g. 4.5">
+      </label>
+      <label class="field">
+        <span>Notes</span>
+        <textarea id="entryNotes" rows="2" placeholder="Optional notes for this day"></textarea>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="deleteEntryBtn">Delete</button>
+        <button type="submit" class="btn btn-primary">Save Entry</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
